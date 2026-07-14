@@ -1,0 +1,337 @@
+{
+  "name": "LinkedIn Publicacion - 2",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableTokenApi",
+        "baseId": {
+          "__rl": true,
+          "value": "https://airtable.com/appkY0gatHy03uCaS/tblQ8n1fXOAf6B12b/viwB7hU2oF14EbJg1?blocks=hide",
+          "mode": "url"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "https://airtable.com/appkY0gatHy03uCaS/tblQ8n1fXOAf6B12b/viwB7hU2oF14EbJg1?blocks=hide",
+          "mode": "url"
+        },
+        "triggerField": "Modificado Imagen",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "85059082-5691-4ebd-9fd4-7785de1d97a4",
+      "name": "Se activa cuando se sube la imagen",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "KlpxouRJMWVEj21V",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "appkY0gatHy03uCaS",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Automático",
+          "cachedResultUrl": "https://airtable.com/appkY0gatHy03uCaS"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblQ8n1fXOAf6B12b",
+          "mode": "list",
+          "cachedResultName": "Contenido",
+          "cachedResultUrl": "https://airtable.com/appkY0gatHy03uCaS/tblQ8n1fXOAf6B12b"
+        },
+        "id": "={{ $json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "35b7b8b3-9d9d-4120-84bd-797b8dc410c2",
+      "name": "Traer el registro",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "KlpxouRJMWVEj21V",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.fields['Imagen Miniatura'][0].url }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        432,
+        0
+      ],
+      "id": "61d8231c-e55e-4361-9127-8561d57e6039",
+      "name": "Miniatura a File"
+    },
+    {
+      "parameters": {
+        "person": "N4jatJAWLl",
+        "text": "={{ $('Traer el registro').item.json.fields['Contenido Generado'] }}",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        640,
+        0
+      ],
+      "id": "087ee4b5-5998-4736-8c3e-33d45238258f",
+      "name": "Crear post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "uuPzWnE5Yk2FuuQ4",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appkY0gatHy03uCaS",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Automático",
+          "cachedResultUrl": "https://airtable.com/appkY0gatHy03uCaS"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblQ8n1fXOAf6B12b",
+          "mode": "list",
+          "cachedResultName": "Contenido",
+          "cachedResultUrl": "https://airtable.com/appkY0gatHy03uCaS/tblQ8n1fXOAf6B12b"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Traer el registro').item.json.id }}",
+            "Estado": "Publicado"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Idea Semilla",
+              "displayName": "Idea Semilla",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Documento PDF",
+              "displayName": "Documento PDF",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Esperando Imagen",
+                  "value": "Esperando Imagen"
+                },
+                {
+                  "name": "Publicado",
+                  "value": "Publicado"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Contenido Generado",
+              "displayName": "Contenido Generado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Prompt de Imagen",
+              "displayName": "Prompt de Imagen",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Imagen Miniatura",
+              "displayName": "Imagen Miniatura",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Modificado PDF",
+              "displayName": "Modificado PDF",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Modificado Imagen",
+              "displayName": "Modificado Imagen",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        0
+      ],
+      "id": "15d12f30-c465-4fc9-815b-1d61ec14811a",
+      "name": "Actualizar a \"Publicado\"",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "KlpxouRJMWVEj21V",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Se activa cuando se sube la imagen": {
+      "main": [
+        [
+          {
+            "node": "Traer el registro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Traer el registro": {
+      "main": [
+        [
+          {
+            "node": "Miniatura a File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Miniatura a File": {
+      "main": [
+        [
+          {
+            "node": "Crear post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear post": {
+      "main": [
+        [
+          {
+            "node": "Actualizar a \"Publicado\"",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4f2689b9-8b66-4fca-bba8-8d729c011ff4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9774988d2efc4d9ee3c1b87aae4c70ac6833a31e8031606306db07d7030a6b7c"
+  },
+  "nodeGroups": [],
+  "id": "zCOKnRHaFUusGCf7",
+  "tags": []
+}
